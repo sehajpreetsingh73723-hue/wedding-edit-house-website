@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Edit House — Luxury Post-Production</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js for WebGL shader hero -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Brand fonts from guidelines -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Brand CSS variables */
+        :root {
+            --deep-navy: #1A1A2E;
+            --charcoal: #2D2D3F;
+            --dark-slate: #3A3A52;
+            --gold: #C9A84C;
+            --gold-light: #E8D48B;
+            --gold-pale: #F5EDD6;
+            --champagne: #F7F3EB;
+            --ivory: #FDFBF7;
+            --white: #FFFFFF;
+            --warm-gray: #6B7280;
+            --light-gray: #E5E7EB;
+            --soft-blush: #F0E6E0;
+            --sage: #8B9D83;
+            --dusty-rose: #C4A4A0;
+
+            --font-headline: 'Playfair Display', serif;
+            --font-subhead: 'Cormorant Garamond', serif;
+            --font-ui: 'Montserrat', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
+            --maxWidth: 1200px;
+            --margin: 1.5rem;
+            --headerHeight: 56px;
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.06);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 600px) {
+            :root { --margin: 2rem; }
+        }
+
+        *, *::after, *::before { box-sizing: border-box; }
+
+        html {
+            font: 15px / 1.7 var(--font-body);
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            color: var(--charcoal);
+        }
+
+        body {
+            margin: 0;
+            background: var(--ivory);
+        }
+
+        /* Layout */
+        .content-width {
+            max-width: var(--maxWidth);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: var(--margin);
+            padding-right: var(--margin);
+        }
+
+        /* Section spacing — 80-120px vertical per brand specs */
+        .section-pad {
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+        .section-pad-lg {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+
+        /* Headlines — Playfair Display */
+        h1, h2, h3 {
+            font-family: var(--font-headline);
+            color: var(--deep-navy);
+            line-height: 1.2;
+        }
+
+        /* Subheadings — Cormorant Garamond */
+        .subhead {
+            font-family: var(--font-subhead);
+            letter-spacing: 6px;
+        }
+
+        /* Labels — Montserrat uppercase */
+        .label {
+            font-family: var(--font-ui);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--gold);
+        }
+
+        /* Body text */
+        p { color: var(--warm-gray); }
+
+        /* Links */
+        a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        a:hover { opacity: 0.7; }
+        a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+        a:active { opacity: 0.5; }
+
+        /* Primary button — gold per brand specs */
+        .btn-primary {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--white);
+            padding: 14px 36px;
+            font-family: var(--font-ui);
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .btn-primary:hover { background: #b8963f; color: var(--white); opacity: 1; transform: scale(1.02); }
+        .btn-primary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Secondary button — navy outline per brand specs */
+        .btn-secondary {
+            display: inline-block;
+            background: transparent;
+            color: var(--deep-navy);
+            padding: 14px 36px;
+            font-family: var(--font-ui);
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            border: 1.5px solid var(--deep-navy);
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+        .btn-secondary:hover { background: var(--deep-navy); color: var(--white); opacity: 1; transform: scale(1.02); }
+        .btn-secondary:focus-visible { outline: 2px solid var(--deep-navy); outline-offset: 2px; }
+        .btn-secondary:active { transform: scale(0.98); }
+
+        /* Dark sections — deep navy */
+        .dark-section { background: var(--deep-navy); color: var(--white); }
+        .dark-section h2, .dark-section h3 { color: var(--white); }
+        .dark-section p { color: rgba(255,255,255,0.7); }
+        .dark-section .label { color: var(--gold-light); }
+
+        /* Champagne sections */
+        .champagne-section { background: var(--champagne); }
+
+        /* Blush section */
+        .blush-section { background: var(--soft-blush); }
+
+        /* Gold divider */
+        .gold-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        /* Image treatment */
+        .img-cover {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Card shadow */
+        .card-shadow { box-shadow: var(--shadow-card); }
+        .card-shadow:hover { box-shadow: var(--shadow-hover); }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.hidden-start {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer { background: var(--deep-navy); color: rgba(255,255,255,0.5); }
+        footer a { color: var(--gold-light); }
+        footer a:hover { color: var(--gold); opacity: 1; }
+
+        /* Film strip decoration */
+        .film-strip {
+            display: flex;
+            gap: 6px;
+        }
+        .film-hole {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            border: 1.5px solid var(--gold);
+            opacity: 0.4;
+        }
+
+        /* ===== DARK MODE TOGGLE ===== */
+        .dark-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+        .dark-toggle:hover { background: rgba(0,0,0,0.95); }
+        .dark-toggle-label {
+            font-family: var(--font-ui);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+        }
+        /* The switch track */
+        .toggle-track {
+            width: 40px;
+            height: 22px;
+            border-radius: 11px;
+            background: rgba(255,255,255,0.15);
+            position: relative;
+            transition: background 0.3s ease;
+        }
+        .toggle-track.active { background: #7EB8DA; }
+        /* The switch knob */
+        .toggle-knob {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--white);
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .toggle-track.active .toggle-knob { transform: translateX(18px); }
+
+        /* ===== DARK MODE OVERRIDES ===== */
+        /* Accent color for dark mode — ice blue instead of gold */
+        body.dark-mode {
+            --dm-accent: #7EB8DA;
+            --dm-accent-light: #A8D4ED;
+            --dm-bg: #000000;
+            --dm-surface: #0A0A0A;
+            --dm-card: #111111;
+            --dm-border: rgba(255,255,255,0.08);
+        }
+
+        /* Base — true black */
+        body.dark-mode { background: var(--dm-bg) !important; }
+
+        /* Header — black */
+        body.dark-mode header { background: var(--dm-bg) !important; border-bottom-color: var(--dm-border) !important; }
+        body.dark-mode header a { color: var(--white); }
+        body.dark-mode header .btn-primary { background: var(--dm-accent) !important; color: #000 !important; }
+        body.dark-mode header .btn-primary:hover { background: var(--dm-accent-light) !important; }
+
+        /* Text */
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: var(--white); }
+        body.dark-mode p { color: rgba(255,255,255,0.6); }
+        body.dark-mode .label { color: var(--dm-accent-light); }
+
+        /* ALL sections — true black */
+        body.dark-mode section { background: var(--dm-bg) !important; border-color: var(--dm-border) !important; }
+        body.dark-mode .dark-section { background: var(--dm-surface) !important; }
+        body.dark-mode .champagne-section { background: var(--dm-surface) !important; }
+        body.dark-mode .blush-section { background: var(--dm-surface) !important; }
+
+        /* Cards and testimonials */
+        body.dark-mode .card-shadow,
+        body.dark-mode [style*="background: var(--white)"] { background: var(--dm-card) !important; border-color: var(--dm-border) !important; }
+
+        /* Swap gold accents to ice blue */
+        body.dark-mode .gold-divider { background: var(--dm-accent) !important; }
+        body.dark-mode .btn-primary { background: var(--dm-accent) !important; color: #000 !important; }
+        body.dark-mode .btn-primary:hover { background: var(--dm-accent-light) !important; }
+        body.dark-mode .btn-secondary { color: var(--dm-accent); border-color: var(--dm-accent); }
+        body.dark-mode .btn-secondary:hover { background: var(--dm-accent); color: #000; }
+
+        /* Process/services step numbers & borders */
+        body.dark-mode [style*="color: var(--gold)"] { color: var(--dm-accent) !important; }
+        body.dark-mode [style*="border: 1px solid rgba(201,168,76"] { border-color: var(--dm-border) !important; }
+        body.dark-mode [style*="border-left: 3px solid var(--gold)"] { border-left-color: var(--dm-accent) !important; }
+
+        /* Footer — black */
+        body.dark-mode footer { background: var(--dm-bg) !important; border-color: var(--dm-border) !important; }
+        body.dark-mode footer a { color: var(--dm-accent-light); }
+        body.dark-mode footer a:hover { color: var(--dm-accent); }
+
+        /* Film holes */
+        body.dark-mode .film-hole { border-color: var(--dm-accent); }
+
+        /* Smooth transition on everything */
+        body, header, section, h1, h2, h3, p, a, .btn-primary, .btn-secondary, footer {
+            transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
+        /* Dark toggle itself changes look in light mode */
+        body:not(.dark-mode) .dark-toggle {
+            background: rgba(255,255,255,0.9);
+            border-color: var(--light-gray);
+        }
+        body:not(.dark-mode) .dark-toggle:hover { background: rgba(255,255,255,1); }
+        body:not(.dark-mode) .dark-toggle-label { color: var(--deep-navy); }
+
+        /* ===== MUSIC PLAYER ===== */
+        .music-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 100;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .music-btn:hover { background: rgba(0,0,0,0.95); transform: scale(1.08); }
+        .music-btn:active { transform: scale(0.95); }
+        body:not(.dark-mode) .music-btn {
+            background: rgba(255,255,255,0.9);
+            border-color: var(--light-gray);
+        }
+        body:not(.dark-mode) .music-btn:hover { background: rgba(255,255,255,1); }
+
+        /* Animated bars that pulse when music plays */
+        .music-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 18px;
+        }
+        .music-bars .bar {
+            width: 3px;
+            border-radius: 2px;
+            background: #7EB8DA;
+            transition: height 0.2s ease;
+        }
+        /* When paused — bars are still */
+        .music-bars.paused .bar { height: 4px !important; }
+        /* When playing — bars animate */
+        .music-bars.playing .bar:nth-child(1) { animation: barPulse 0.5s ease-in-out infinite alternate; }
+        .music-bars.playing .bar:nth-child(2) { animation: barPulse 0.5s ease-in-out 0.1s infinite alternate; }
+        .music-bars.playing .bar:nth-child(3) { animation: barPulse 0.5s ease-in-out 0.2s infinite alternate; }
+        .music-bars.playing .bar:nth-child(4) { animation: barPulse 0.5s ease-in-out 0.3s infinite alternate; }
+
+        @keyframes barPulse {
+            0% { height: 4px; }
+            100% { height: 18px; }
+        }
+
+        /* "Click to play" prompt that shows on first load */
+        .music-prompt {
+            position: fixed;
+            bottom: 80px;
+            left: 14px;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            color: #A8D4ED;
+            font-family: var(--font-ui);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: promptFadeIn 0.5s ease 1.5s forwards;
+            pointer-events: none;
+        }
+        .music-prompt::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 22px;
+            width: 10px;
+            height: 10px;
+            background: rgba(0,0,0,0.9);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+        }
+        .music-prompt.hidden { display: none; }
+        @keyframes promptFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dark mode toggle — fixed in bottom-right corner -->
+    <div class="dark-toggle" id="darkToggle" role="button" aria-label="Toggle dark mode" tabindex="0">
+        <span class="dark-toggle-label">Dark</span>
+        <div class="toggle-track" id="toggleTrack">
+            <div class="toggle-knob"></div>
+        </div>
+    </div>
+
+    <!-- Background music -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="bg-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music toggle button — fixed bottom-left -->
+    <button class="music-btn" id="musicBtn" aria-label="Toggle music">
+        <div class="music-bars paused" id="musicBars">
+            <div class="bar" style="height: 4px;"></div>
+            <div class="bar" style="height: 4px;"></div>
+            <div class="bar" style="height: 4px;"></div>
+            <div class="bar" style="height: 4px;"></div>
+        </div>
+    </button>
+    <div class="music-prompt" id="musicPrompt">&#9835; Click to play music</div>
+
+    <!-- HEADER -->
+    <header style="position: sticky; top: 0; z-index: 10; background: var(--ivory); height: var(--headerHeight); display: flex; align-items: center; border-bottom: 1px solid var(--light-gray);">
+        <div class="content-width" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <!-- Logo -->
+            <a href="#" style="display: flex; align-items: center; gap: 10px;">
+                <img src="brand_assets/wedding-edit-house-logo.png" alt="Wedding Edit House" style="height: 36px; width: auto;">
+            </a>
+            <!-- Nav — Montserrat uppercase -->
+            <nav style="display: flex; align-items: center; gap: 2rem;">
+                <a href="#work" style="font-family: var(--font-ui); font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--deep-navy);">Work</a>
+                <a href="#process" style="font-family: var(--font-ui); font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--deep-navy);">Process</a>
+                <a href="#about" style="font-family: var(--font-ui); font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--deep-navy);">About</a>
+                <a href="#contact" class="btn-primary" style="padding: 10px 28px;">Book a Call</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section style="padding: 120px 0 100px; background: var(--deep-navy); position: relative; overflow: hidden;">
+        <!-- WebGL shader canvas — animated background -->
+        <canvas id="hero-shader" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; z-index: 0;"></canvas>
+        <!-- Dark overlay so text stays readable -->
+        <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(26,26,46,0.3) 0%, rgba(26,26,46,0.75) 100%); z-index: 1;"></div>
+        <div class="content-width" style="display: flex; align-items: center; gap: 60px; flex-wrap: wrap; position: relative; z-index: 2;">
+            <!-- Left: Copy -->
+            <div style="flex: 1; min-width: 320px;">
+                <p class="label" style="margin-bottom: 16px; color: var(--gold-light);">Luxury Post-Production</p>
+                <h1 style="font-size: 48px; font-weight: 600; margin: 0 0 24px; letter-spacing: -0.5px; color: var(--white);">
+                    We craft your footage into <span style="color: var(--gold); font-style: italic; font-family: var(--font-subhead); font-weight: 400; letter-spacing: 2px;">cinematic stories</span>
+                </h1>
+                <div class="gold-divider" style="margin-bottom: 24px;"></div>
+                <p style="line-height: 1.8; margin-bottom: 32px; max-width: 480px; color: rgba(255,255,255,0.7);">
+                    Wedding Edit House is a premium post-production studio that partners with wedding videographers across the United States. We transform raw footage into films your clients will treasure forever.
+                </p>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <a href="#contact" class="btn-primary">Book a Call</a>
+                    <a href="#work" class="btn-secondary" style="color: var(--white); border-color: var(--white);">View Portfolio</a>
+                </div>
+            </div>
+            <!-- Right: Decorative film-inspired graphic -->
+            <div style="flex: 1; min-width: 280px; display: flex; justify-content: center;">
+                <div style="position: relative; width: 320px; height: 380px;">
+                    <!-- Stacked film frame cards -->
+                    <div style="position: absolute; top: 40px; left: 20px; width: 260px; height: 180px; background: var(--champagne); border-radius: 8px; box-shadow: var(--shadow-card); transform: rotate(-3deg);"></div>
+                    <div style="position: absolute; top: 20px; left: 40px; width: 260px; height: 180px; background: var(--soft-blush); border-radius: 8px; box-shadow: var(--shadow-card); transform: rotate(2deg);"></div>
+                    <div style="position: absolute; top: 0; left: 30px; width: 260px; height: 180px; background: var(--deep-navy); border-radius: 8px; box-shadow: var(--shadow-hover); display: flex; align-items: center; justify-content: center;">
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-headline); font-size: 18px; color: var(--white); letter-spacing: 4px; font-weight: 600;">WEDDING</div>
+                            <div style="font-family: var(--font-subhead); font-size: 14px; color: var(--gold); letter-spacing: 6px; margin-top: 4px;">EDIT HOUSE</div>
+                        </div>
+                    </div>
+                    <!-- Film strip dots -->
+                    <div style="position: absolute; bottom: 100px; left: 30px; display: flex; gap: 8px;">
+                        <div class="film-hole"></div>
+                        <div class="film-hole"></div>
+                        <div class="film-hole"></div>
+                        <div class="film-hole"></div>
+                        <div class="film-hole"></div>
+                    </div>
+                    <!-- Stats -->
+                    <div style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 40px;">
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-headline); font-size: 28px; color: var(--white); font-weight: 600;">500+</div>
+                            <div style="font-family: var(--font-ui); font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2px; text-transform: uppercase;">Films Delivered</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-headline); font-size: 28px; color: var(--white); font-weight: 600;">50+</div>
+                            <div style="font-family: var(--font-ui); font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2px; text-transform: uppercase;">Studio Partners</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CASE STUDY 1 — Featured Wedding Film -->
+    <section id="work" class="champagne-section section-pad-lg" style="border-top: 1px solid var(--light-gray);">
+        <div class="content-width reveal">
+            <p class="label" style="margin-bottom: 12px;">Featured Work</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">A Tuscan Villa Love Story</h2>
+            <div class="gold-divider" style="margin-bottom: 24px;"></div>
+            <p style="line-height: 1.8; margin-bottom: 32px; max-width: 600px;">
+                A destination wedding in the rolling hills of Tuscany. We transformed 12 hours of raw footage into a cinematic 8-minute highlight film and a 45-minute feature — delivered in just 10 business days.
+            </p>
+        </div>
+        <div class="content-width reveal" style="margin-top: 24px;">
+            <div style="position: relative; border-radius: 8px; overflow: hidden;">
+                <img src="https://placehold.co/1200x560/2D2D3F/C9A84C?text=Cinematic+Wedding+Film" alt="Tuscan wedding film" class="img-cover" style="border-radius: 8px;">
+                <!-- Warm gradient overlay -->
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,46,0.5), transparent); border-radius: 8px; mix-blend-multiply;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CASE STUDY 2 — Two side-by-side projects -->
+    <section class="section-pad-lg" style="border-top: 1px solid var(--light-gray);">
+        <div class="content-width reveal">
+            <p class="label" style="margin-bottom: 12px;">Recent Projects</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Crafted with Care</h2>
+            <div class="gold-divider" style="margin-bottom: 24px;"></div>
+            <p style="line-height: 1.8; margin-bottom: 40px; max-width: 600px;">
+                Every edit is a collaboration. We learn your style, match your vision, and deliver films that feel unmistakably yours.
+            </p>
+        </div>
+        <div class="content-width reveal" style="display: flex; gap: 24px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px; position: relative; border-radius: 8px; overflow: hidden;">
+                <img src="https://placehold.co/580x380/F7F3EB/2D2D3F?text=Coastal+Wedding" alt="Coastal wedding" class="img-cover" style="border-radius: 8px; border: 1px solid var(--light-gray);">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,46,0.4), transparent); border-radius: 8px;"></div>
+                <div style="position: absolute; bottom: 24px; left: 24px;">
+                    <p style="font-family: var(--font-ui); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin: 0 0 4px;">Highlight Film</p>
+                    <p style="font-family: var(--font-headline); font-size: 18px; color: var(--white); margin: 0;">Malibu Cliffside</p>
+                </div>
+            </div>
+            <div style="flex: 1; min-width: 280px; position: relative; border-radius: 8px; overflow: hidden;">
+                <img src="https://placehold.co/580x380/F0E6E0/2D2D3F?text=Garden+Wedding" alt="Garden wedding" class="img-cover" style="border-radius: 8px; border: 1px solid var(--light-gray);">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,46,0.4), transparent); border-radius: 8px;"></div>
+                <div style="position: absolute; bottom: 24px; left: 24px;">
+                    <p style="font-family: var(--font-ui); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin: 0 0 4px;">Feature Film</p>
+                    <p style="font-family: var(--font-headline); font-size: 18px; color: var(--white); margin: 0;">Napa Valley Estate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DARK SECTION — Process -->
+    <section id="process" class="dark-section section-pad-lg">
+        <div class="content-width reveal" style="text-align: center; margin-bottom: 60px;">
+            <p class="label" style="margin-bottom: 12px;">Our Process</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Seamless From Start to Finish</h2>
+            <div class="gold-divider" style="margin: 0 auto 24px;"></div>
+            <p style="max-width: 520px; margin: 0 auto; line-height: 1.8;">
+                We've refined our workflow over hundreds of projects so you can hand off your footage and get back to filming.
+            </p>
+        </div>
+        <div class="content-width reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px;">
+            <!-- Step 1 -->
+            <div style="text-align: center; padding: 40px 24px; border: 1px solid rgba(201,168,76,0.2); border-radius: 8px;">
+                <div style="font-family: var(--font-headline); font-size: 32px; color: var(--gold); margin-bottom: 16px;">01</div>
+                <h3 style="font-family: var(--font-subhead); font-size: 20px; font-weight: 400; letter-spacing: 2px; margin-bottom: 12px;">Upload</h3>
+                <p style="font-size: 14px; line-height: 1.7;">Send us your footage through our secure portal. We accept all major formats.</p>
+            </div>
+            <!-- Step 2 -->
+            <div style="text-align: center; padding: 40px 24px; border: 1px solid rgba(201,168,76,0.2); border-radius: 8px;">
+                <div style="font-family: var(--font-headline); font-size: 32px; color: var(--gold); margin-bottom: 16px;">02</div>
+                <h3 style="font-family: var(--font-subhead); font-size: 20px; font-weight: 400; letter-spacing: 2px; margin-bottom: 12px;">We Edit</h3>
+                <p style="font-size: 14px; line-height: 1.7;">Our editors craft your footage into a cinematic story that matches your creative style.</p>
+            </div>
+            <!-- Step 3 -->
+            <div style="text-align: center; padding: 40px 24px; border: 1px solid rgba(201,168,76,0.2); border-radius: 8px;">
+                <div style="font-family: var(--font-headline); font-size: 32px; color: var(--gold); margin-bottom: 16px;">03</div>
+                <h3 style="font-family: var(--font-subhead); font-size: 20px; font-weight: 400; letter-spacing: 2px; margin-bottom: 12px;">Review</h3>
+                <p style="font-size: 14px; line-height: 1.7;">Preview your film and request revisions. Two rounds of revisions included with every project.</p>
+            </div>
+            <!-- Step 4 -->
+            <div style="text-align: center; padding: 40px 24px; border: 1px solid rgba(201,168,76,0.2); border-radius: 8px;">
+                <div style="font-family: var(--font-headline); font-size: 32px; color: var(--gold); margin-bottom: 16px;">04</div>
+                <h3 style="font-family: var(--font-subhead); font-size: 20px; font-weight: 400; letter-spacing: 2px; margin-bottom: 12px;">Deliver</h3>
+                <p style="font-size: 14px; line-height: 1.7;">Receive your finished film in 4K, ready to share. Turnaround in 7-14 business days.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DARK SECTION — Showcase reel -->
+    <section class="dark-section" style="padding: 80px 0 0;">
+        <div class="content-width reveal" style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Your Brand, Elevated</h2>
+            <p style="max-width: 520px; margin: 0 auto; line-height: 1.8;">
+                We don't just edit — we become an extension of your creative vision. Every color grade, every cut, every transition reflects your unique style.
+            </p>
+        </div>
+        <div class="reveal">
+            <!-- Cinematic widescreen preview -->
+            <div style="max-width: 900px; margin: 0 auto; position: relative;">
+                <img src="https://placehold.co/900x400/1A1A2E/C9A84C?text=Cinematic+Showreel" alt="Showreel" class="img-cover">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--deep-navy), transparent 40%);"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DARK SECTION — Product Interface -->
+    <section class="dark-section section-pad-lg">
+        <div class="content-width reveal" style="text-align: center; margin-bottom: 40px;">
+            <p class="label" style="margin-bottom: 12px;">Client Portal</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Track Every Project</h2>
+            <div class="gold-divider" style="margin: 0 auto 24px;"></div>
+            <p style="max-width: 520px; margin: 0 auto; line-height: 1.8;">
+                Upload footage, track progress, review edits, and download deliverables — all from one streamlined dashboard built for busy filmmakers.
+            </p>
+        </div>
+        <div class="content-width reveal">
+            <img src="https://placehold.co/1200x500/2D2D3F/6B7280?text=Client+Dashboard+Interface" alt="Client portal" class="img-cover" style="border-radius: 8px; border: 1px solid rgba(201,168,76,0.15);">
+        </div>
+    </section>
+
+    <!-- CHAMPAGNE SECTION — Mobile / Testimonial -->
+    <section class="champagne-section section-pad-lg">
+        <div class="content-width reveal" style="text-align: center; margin-bottom: 60px;">
+            <p class="label" style="margin-bottom: 12px;">Testimonials</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Trusted by Filmmakers</h2>
+            <div class="gold-divider" style="margin: 0 auto 24px;"></div>
+        </div>
+        <div class="content-width reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Testimonial 1 -->
+            <div style="background: var(--white); padding: 40px 32px; border-radius: 10px; box-shadow: var(--shadow-card); border-left: 3px solid var(--gold);">
+                <p style="font-family: var(--font-subhead); font-size: 20px; font-style: italic; color: var(--deep-navy); line-height: 1.6; margin-bottom: 24px;">
+                    "They understood my style from day one. My clients can't tell the difference between footage I edit and footage they edit. That's the highest compliment."
+                </p>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--soft-blush);"></div>
+                    <div>
+                        <p style="font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--deep-navy); margin: 0; text-transform: uppercase;">Sarah Mitchell</p>
+                        <p style="font-size: 13px; color: var(--warm-gray); margin: 0;">Wedding Filmmaker, Austin TX</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial 2 -->
+            <div style="background: var(--white); padding: 40px 32px; border-radius: 10px; box-shadow: var(--shadow-card); border-left: 3px solid var(--gold);">
+                <p style="font-family: var(--font-subhead); font-size: 20px; font-style: italic; color: var(--deep-navy); line-height: 1.6; margin-bottom: 24px;">
+                    "I went from editing 60 hours a week to spending weekends with my family. Wedding Edit House gave me my life back — and my films have never looked better."
+                </p>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--dusty-rose);"></div>
+                    <div>
+                        <p style="font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--deep-navy); margin: 0; text-transform: uppercase;">James Rivera</p>
+                        <p style="font-size: 13px; color: var(--warm-gray); margin: 0;">Cinematic Films, Los Angeles CA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GOLD ACCENT SECTION — Services -->
+    <section style="background: var(--deep-navy); padding: 100px 0;">
+        <div class="content-width reveal" style="text-align: center;">
+            <p class="label" style="color: var(--gold-light); margin-bottom: 12px;">Services</p>
+            <h2 style="font-size: 36px; font-weight: 500; color: var(--white); margin-bottom: 16px;">What We Deliver</h2>
+            <div class="gold-divider" style="margin: 0 auto 40px;"></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 800px; margin: 0 auto;">
+                <div style="padding: 32px 20px; border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;">
+                    <div style="font-family: var(--font-headline); font-size: 24px; color: var(--gold); margin-bottom: 12px;">Highlights</div>
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7;">3-8 minute cinematic highlight films with licensed music.</p>
+                </div>
+                <div style="padding: 32px 20px; border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;">
+                    <div style="font-family: var(--font-headline); font-size: 24px; color: var(--gold); margin-bottom: 12px;">Features</div>
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7;">Full ceremony and reception feature films, 30-60 minutes.</p>
+                </div>
+                <div style="padding: 32px 20px; border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;">
+                    <div style="font-family: var(--font-headline); font-size: 24px; color: var(--gold); margin-bottom: 12px;">Socials</div>
+                    <p style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7;">Vertical cuts optimized for Instagram Reels and TikTok.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLUSH SECTION — Pricing teaser -->
+    <section class="blush-section section-pad-lg">
+        <div class="content-width reveal" style="text-align: center;">
+            <p class="label" style="margin-bottom: 12px;">Pricing</p>
+            <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Simple, Transparent Pricing</h2>
+            <div class="gold-divider" style="margin: 0 auto 24px;"></div>
+            <p style="max-width: 520px; margin: 0 auto 40px; line-height: 1.8;">
+                No hidden fees. No surprise charges. Choose the package that fits your workflow and scale as you grow.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <a href="#contact" class="btn-primary">Get Pricing</a>
+                <a href="#contact" class="btn-secondary">Schedule a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT / ABOUT -->
+    <section id="about" class="section-pad-lg" style="border-top: 1px solid var(--light-gray);">
+        <div class="content-width reveal" style="text-align: center;">
+            <p class="label" style="margin-bottom: 12px;">Get Started</p>
+            <h2 id="contact" style="font-size: 36px; font-weight: 500; margin-bottom: 16px;">Let's Create Together</h2>
+            <div class="gold-divider" style="margin: 0 auto 24px;"></div>
+            <p style="max-width: 520px; margin: 0 auto 32px; line-height: 1.8;">
+                We'll handle the edit — you focus on filming. Book a call to see how Wedding Edit House can become your trusted editing partner.
+            </p>
+            <a href="mailto:hello@weddingeditho.us" class="btn-primary">Book a Call</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="padding: 40px 0; border-top: 1px solid rgba(201,168,76,0.15);">
+        <div class="content-width" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="brand_assets/wedding-edit-house-logo.png" alt="Wedding Edit House" style="height: 28px; width: auto; opacity: 0.8;">
+            </div>
+            <p style="margin: 0; font-family: var(--font-ui); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">&copy; 2026 Wedding Edit House</p>
+            <nav style="display: flex; gap: 1.5rem; font-family: var(--font-ui); font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;">
+                <a href="#">Instagram</a>
+                <a href="#">Vimeo</a>
+                <a href="#">YouTube</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        /* Scroll reveal */
+        const revealEls = document.querySelectorAll('.reveal');
+        revealEls.forEach(el => el.classList.add('hidden-start'));
+
+        requestAnimationFrame(() => {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        entry.target.classList.remove('hidden-start');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+            revealEls.forEach(el => observer.observe(el));
+        });
+
+        /* Smooth scroll */
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        /* WebGL Shader — animated background behind hero */
+        (function() {
+            const canvas = document.getElementById('hero-shader');
+            if (!canvas || typeof THREE === 'undefined') return;
+
+            const heroSection = canvas.parentElement;
+
+            /* Vertex shader — passes position through */
+            const vertexShader = `
+                attribute vec3 position;
+                void main() {
+                    gl_Position = vec4(position, 1.0);
+                }
+            `;
+
+            /* Fragment shader — creates the animated light wave */
+            const fragmentShader = `
+                precision highp float;
+                uniform vec2 resolution;
+                uniform float time;
+                uniform float xScale;
+                uniform float yScale;
+                uniform float distortion;
+
+                void main() {
+                    vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+                    float d = length(p) * distortion;
+
+                    float rx = p.x * (1.0 + d);
+                    float gx = p.x;
+                    float bx = p.x * (1.0 - d);
+
+                    /* Each color channel gets a slightly different wave — creates a prism/chromatic effect */
+                    float r = 0.05 / abs(p.y + sin((rx + time) * xScale) * yScale);
+                    float g = 0.05 / abs(p.y + sin((gx + time) * xScale) * yScale);
+                    float b = 0.05 / abs(p.y + sin((bx + time) * xScale) * yScale);
+
+                    gl_FragColor = vec4(r, g, b, 1.0);
+                }
+            `;
+
+            /* Set up Three.js scene */
+            const scene = new THREE.Scene();
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(new THREE.Color(0x1A1A2E));
+
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, -1);
+
+            /* Shader settings — tweak these to change the animation */
+            const uniforms = {
+                resolution: { value: [canvas.offsetWidth, canvas.offsetHeight] },
+                time: { value: 0.0 },
+                xScale: { value: 1.0 },     /* horizontal wave frequency */
+                yScale: { value: 0.5 },     /* vertical wave height */
+                distortion: { value: 0.05 } /* chromatic spread */
+            };
+
+            /* Full-screen quad geometry (two triangles) */
+            const positions = new THREE.BufferAttribute(new Float32Array([
+                -1, -1, 0,   1, -1, 0,  -1, 1, 0,
+                 1, -1, 0,  -1,  1, 0,   1, 1, 0
+            ]), 3);
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', positions);
+
+            const material = new THREE.RawShaderMaterial({
+                vertexShader,
+                fragmentShader,
+                uniforms,
+                side: THREE.DoubleSide
+            });
+
+            scene.add(new THREE.Mesh(geometry, material));
+
+            /* Size the canvas to match the hero section */
+            function resize() {
+                const w = heroSection.offsetWidth;
+                const h = heroSection.offsetHeight;
+                renderer.setSize(w, h, false);
+                uniforms.resolution.value = [w, h];
+            }
+
+            /* Animation loop */
+            let animId;
+            function animate() {
+                uniforms.time.value += 0.01;
+                renderer.render(scene, camera);
+                animId = requestAnimationFrame(animate);
+            }
+
+            resize();
+            animate();
+            window.addEventListener('resize', resize);
+        })();
+
+        /* Background music player */
+        (function() {
+            const audio = document.getElementById('bgMusic');
+            const btn = document.getElementById('musicBtn');
+            const bars = document.getElementById('musicBars');
+            const prompt = document.getElementById('musicPrompt');
+            let isPlaying = false;
+
+            /* Try to autoplay — browsers usually block this, so we show the prompt */
+            audio.volume = 0.4;
+            const autoplayAttempt = audio.play();
+            if (autoplayAttempt) {
+                autoplayAttempt.then(() => {
+                    /* Autoplay worked */
+                    isPlaying = true;
+                    bars.classList.remove('paused');
+                    bars.classList.add('playing');
+                    prompt.classList.add('hidden');
+                }).catch(() => {
+                    /* Autoplay blocked — user needs to click */
+                    isPlaying = false;
+                });
+            }
+
+            btn.addEventListener('click', function() {
+                if (isPlaying) {
+                    audio.pause();
+                    bars.classList.remove('playing');
+                    bars.classList.add('paused');
+                    isPlaying = false;
+                } else {
+                    audio.play();
+                    bars.classList.remove('paused');
+                    bars.classList.add('playing');
+                    isPlaying = true;
+                    prompt.classList.add('hidden');
+                }
+            });
+        })();
+
+        /* Dark mode toggle */
+        (function() {
+            const toggle = document.getElementById('darkToggle');
+            const track = document.getElementById('toggleTrack');
+            let isDark = false;
+
+            /* Check if user had dark mode saved */
+            if (localStorage.getItem('darkMode') === 'on') {
+                isDark = true;
+                document.body.classList.add('dark-mode');
+                track.classList.add('active');
+            }
+
+            toggle.addEventListener('click', function() {
+                isDark = !isDark;
+
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
+                    track.classList.add('active');
+                    localStorage.setItem('darkMode', 'on');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    track.classList.remove('active');
+                    localStorage.setItem('darkMode', 'off');
+                }
+            });
+
+            /* Also works with keyboard (Enter/Space) */
+            toggle.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggle.click();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
